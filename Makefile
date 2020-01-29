@@ -37,7 +37,7 @@ TAG_LATEST ?= false
 RESTIC_VERSION ?= 0.9.6
 
 CLI_PLATFORMS ?= linux-amd64 linux-arm linux-arm64 darwin-amd64 windows-amd64 linux-ppc64le
-CONTAINER_PLATFORMS ?= linux-amd64 linux-ppc64le #linux-arm linux-arm64
+CONTAINER_PLATFORMS ?= linux-amd64 linux-ppc64le linux-arm #linux-arm64
 MANIFEST_PLATFORMS ?= amd64 ppc64le
 
 ###
@@ -54,9 +54,12 @@ ifeq ($(GOARCH),amd64)
 local-arch:
 	@echo "local environment for amd64 is up-to-date"
 endif
-#ifeq ($(GOARCH),arm)
-#		DOCKERFILE ?= Dockerfile.arm #armel/busybox
-#endif
+ifeq ($(GOARCH),arm)
+		DOCKERFILE ?= Dockerfile-$(BIN)-arm
+local-arch:
+	@mkdir -p _output/bin/linux/arm/
+	@wget -q -O - https://github.com/restic/restic/releases/download/v$(RESTIC_VERSION)/restic_$(RESTIC_VERSION)_linux_arm.bz2 | bunzip2 > _output/bin/linux/arm/restic
+endif
 #ifeq ($(GOARCH),arm64)
 #		DOCKERFILE ?= Dockerfile.arm64 #aarch64/busybox
 #endif
